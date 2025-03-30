@@ -1,0 +1,51 @@
+site_name: AWS HPC Drug Discovery
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.code.annotate
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Home: index.md
+  - Infrastructure:
+    - Overview: infrastructure/overview.md
+    - Components: infrastructure/components.md
+    - Deployment: infrastructure/deployment.md
+    - Cost Estimation: infrastructure/cost_estimation.md
+    - Performance: infrastructure/performance_optimization.md
+    - Security: infrastructure/security.md
+    - Disaster Recovery: infrastructure/disaster_recovery.md
+    - Monitoring: infrastructure/monitoring.md
+  - Development:
+    - Setup: development/setup.md
+    - CI/CD: development/ci-cd.md
+    - Testing: development/testing.md
+    - Code Style: development/code_style.md
+  - API Reference: api_reference.md
+
+plugins:
+  - search
+  - minify:
+      minify_html: true 

@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  preprocessing:
+    build:
+      context: .
+      dockerfile: docker/preprocessing/Dockerfile
+    volumes:
+      - ./data:/app/data
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+
+  training:
+    build:
+      context: .
+      dockerfile: docker/training/Dockerfile
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - preprocessing
+      - mlflow
+
+  inference:
+    build:
+      context: .
+      dockerfile: docker/inference/Dockerfile
+    ports:
+      - "8501:8501"  # Streamlit port
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - training
+      - mlflow
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlruns
+    command: mlflow server --host 0.0.0.0 
