@@ -1,0 +1,19 @@
+# Primary goal of the repository
+The ultimate goal of this GitHub repository is to stand out for a future interviewer as an experienced "AI/HPC Solution Architect".
+
+# Code style rules
+- Use descriptive variable names that reflect their purpose (e.g., `isAuthenticated`, `fetchUserData`).
+- Always include type annotations in Python function definitions.
+- Follow industry best practices for HPC and AI solutions, including modular design and scalability.
+
+# Documentation
+- Ensure all functions and classes have detailed docstrings explaining their purpose and usage.
+- Generate automated documentation for all public APIs.
+
+# Testing
+- Write unit tests for all critical components.
+- Use pytest for Python projects with at least 90% code coverage.
+
+# Additional best practices
+- Optimize code for parallel processing where applicable.
+- Include examples of AI/HPC use cases in the README file.

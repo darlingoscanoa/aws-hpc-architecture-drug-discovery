@@ -17,12 +17,11 @@ terraform {
     }
   }
   
-  # Commenting out S3 backend temporarily
-  # backend "s3" {
-  #   bucket = "hpc-drug-discovery-terraform-state"
-  #   key    = "terraform.tfstate"
-  #   region = "us-east-1"
-  # }
+  backend "s3" {
+    bucket = "hpc-drug-discovery-terraform-state"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+  }
 }
 
 # Configure AWS provider
