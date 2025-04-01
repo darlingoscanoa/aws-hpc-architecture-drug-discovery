@@ -11,6 +11,10 @@ terraform {
       source  = "hashicorp/awscc"
       version = "~> 0.1"
     }
+    aws-parallelcluster = {
+      source  = "aws/aws-parallelcluster"
+      version = "~> 1.0"
+    }
   }
   
   # Commenting out S3 backend temporarily
@@ -26,8 +30,8 @@ provider "aws" {
   region = var.aws_region
 }
 
-# Configure AWSCC provider for ParallelCluster
-provider "awscc" {
+# Configure AWS ParallelCluster provider
+provider "aws-parallelcluster" {
   region = var.aws_region
 }
 
