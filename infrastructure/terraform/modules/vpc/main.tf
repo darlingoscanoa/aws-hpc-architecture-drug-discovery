@@ -54,11 +54,9 @@ resource "aws_internet_gateway" "main" {
 
 # Elastic IP for NAT Gateway
 resource "aws_eip" "nat" {
-  domain = "vpc"
   tags = {
     Name        = "${var.project_name}-${var.environment}-nat-eip"
     Environment = var.environment
-    Project     = var.project_name
   }
 }
 
