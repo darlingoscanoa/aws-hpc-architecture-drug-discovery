@@ -12,7 +12,7 @@ output "dns_name" {
 
 output "fsx_mount_name" {
   description = "Mount name of the FSx for Lustre filesystem"
-  value       = aws_fsx_lustre_file_system.fsx.mount_name
+  value       = aws_fsx_lustre_file_system.hpc.mount_name
 }
 
 output "security_group_id" {
