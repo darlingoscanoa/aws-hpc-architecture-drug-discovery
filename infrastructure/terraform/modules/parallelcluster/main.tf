@@ -1,8 +1,8 @@
 # AWS ParallelCluster configuration for HPC infrastructure.
 
 # Create ParallelCluster configuration
-resource "aws_parallelcluster" "hpc" {
-  name = "${var.project_name}-${var.environment}-cluster"
+resource "awscc_parallelcluster" "hpc" {
+  cluster_name = "${var.project_name}-${var.environment}-cluster"
   cluster_configuration = jsonencode({
     HeadNode = {
       InstanceType = var.head_node_instance_type
