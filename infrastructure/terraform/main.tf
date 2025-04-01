@@ -1,6 +1,4 @@
-"""
-Main Terraform configuration for the HPC infrastructure.
-"""
+# Main Terraform configuration for the HPC infrastructure.
 
 terraform {
   required_version = ">= 1.0.0"

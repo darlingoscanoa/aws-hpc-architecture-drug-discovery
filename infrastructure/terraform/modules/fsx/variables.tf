@@ -1,6 +1,4 @@
-"""
-Variables for FSx module configuration.
-"""
+# Variables for FSx module configuration.
 
 variable "project_name" {
   description = "Name of the project"
@@ -15,11 +13,10 @@ variable "environment" {
 variable "storage_capacity" {
   description = "Storage capacity in GB"
   type        = number
-  default     = 1200
 }
 
 variable "subnet_ids" {
-  description = "List of subnet IDs where FSx will be deployed"
+  description = "List of subnet IDs for FSx deployment"
   type        = list(string)
 }
 

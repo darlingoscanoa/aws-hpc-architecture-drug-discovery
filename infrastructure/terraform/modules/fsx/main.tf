@@ -1,27 +1,28 @@
-"""
-FSx for Lustre filesystem configuration for high-performance storage.
-"""
+# FSx for Lustre filesystem configuration for high-performance storage.
 
-resource "aws_fsx_lustre_file_system" "fsx" {
-  storage_capacity            = var.storage_capacity
-  subnet_ids                 = var.subnet_ids
-  deployment_type            = var.deployment_type
-  storage_type               = var.storage_type
-  security_group_ids         = var.security_group_ids
-  weekly_maintenance_start_time = var.maintenance_start_time
+# Create FSx for Lustre filesystem
+resource "aws_fsx_lustre_file_system" "hpc" {
+  storage_capacity                = var.storage_capacity
+  subnet_ids                      = var.subnet_ids
+  security_group_ids             = var.security_group_ids
+  deployment_type                = "PERSISTENT_1"
+  per_unit_storage_throughput    = 200
+  automatic_backup_retention_days = 7
 
-  # Data repository configuration
-  data_repository_configuration {
-    data_repository_path = "s3://${var.s3_bucket_name}"
-    imported_file_chunk_size = 1024
-    auto_import_policy = {
-      events = ["NEW", "CHANGED", "DELETED"]
-    }
-  }
-
-  # Tags
   tags = {
-    Name        = "${var.project_name}-${var.environment}-fsx"
+    Name        = "${var.project_name}-fsx"
+    Environment = var.environment
+  }
+}
+
+# Create data repository association with S3
+resource "aws_fsx_data_repository_association" "hpc" {
+  file_system_id    = aws_fsx_lustre_file_system.hpc.id
+  data_repository_path = "s3://${var.s3_bucket_name}"
+  file_system_path    = "/data"
+
+  tags = {
+    Name        = "${var.project_name}-dra"
     Environment = var.environment
   }
 }

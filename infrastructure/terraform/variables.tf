@@ -1,6 +1,4 @@
-"""
-Variables for the main Terraform configuration.
-"""
+# Variables for the main Terraform configuration.
 
 variable "aws_region" {
   description = "AWS region to deploy resources"

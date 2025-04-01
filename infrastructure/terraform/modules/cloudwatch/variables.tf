@@ -1,6 +1,4 @@
-"""
-Variables for CloudWatch module configuration.
-"""
+# Variables for CloudWatch module configuration.
 
 variable "project_name" {
   description = "Name of the project"
@@ -29,6 +27,6 @@ variable "sns_topic_arn" {
 }
 
 variable "fsx_id" {
-  description = "ID of the FSx for Lustre filesystem"
+  description = "ID of the FSx filesystem"
   type        = string
 } 

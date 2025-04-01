@@ -1,6 +1,4 @@
-"""
-Variables for ParallelCluster module configuration.
-"""
+# Variables for ParallelCluster module configuration.
 
 variable "project_name" {
   description = "Name of the project"
@@ -13,30 +11,28 @@ variable "environment" {
 }
 
 variable "vpc_id" {
-  description = "ID of the VPC where the cluster will be deployed"
+  description = "ID of the VPC"
   type        = string
 }
 
 variable "subnet_id" {
-  description = "ID of the subnet where the cluster will be deployed"
+  description = "ID of the subnet for cluster deployment"
   type        = string
 }
 
 variable "key_name" {
-  description = "Name of the SSH key pair for cluster access"
+  description = "Name of the SSH key pair"
   type        = string
 }
 
 variable "head_node_instance_type" {
-  description = "EC2 instance type for the head node"
+  description = "Instance type for head node"
   type        = string
-  default     = "c5.xlarge"
 }
 
 variable "compute_node_instance_type" {
-  description = "EC2 instance type for compute nodes"
+  description = "Instance type for compute nodes"
   type        = string
-  default     = "hpc6a.48xlarge"
 }
 
 variable "ami_id" {
@@ -47,28 +43,30 @@ variable "ami_id" {
 variable "min_compute_nodes" {
   description = "Minimum number of compute nodes"
   type        = number
-  default     = 0
 }
 
 variable "max_compute_nodes" {
   description = "Maximum number of compute nodes"
   type        = number
-  default     = 10
 }
 
 variable "desired_compute_nodes" {
   description = "Desired number of compute nodes"
   type        = number
-  default     = 1
 }
 
 variable "spot_price" {
   description = "Maximum spot price for compute nodes"
   type        = number
-  default     = 0.0
 }
 
 variable "s3_bucket_name" {
-  description = "Name of the S3 bucket for cluster storage"
+  description = "Name of the S3 bucket for cluster data"
   type        = string
+}
+
+variable "fsx_storage_capacity" {
+  description = "Storage capacity in GB for FSx"
+  type        = number
+  default     = 1200
 } 

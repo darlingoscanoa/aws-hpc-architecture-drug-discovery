@@ -1,6 +1,4 @@
-"""
-Variables for S3 module configuration.
-"""
+# Variables for S3 module configuration.
 
 variable "project_name" {
   description = "Name of the project"

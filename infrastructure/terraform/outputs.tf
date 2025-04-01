@@ -1,6 +1,4 @@
-"""
-Outputs for the main Terraform configuration.
-"""
+# Outputs for the main Terraform configuration.
 
 output "vpc_id" {
   description = "ID of the created VPC"
@@ -28,12 +26,12 @@ output "fsx_id" {
 }
 
 output "fsx_dns_name" {
-  description = "DNS name of the FSx for Lustre filesystem"
-  value       = module.fsx.fsx_dns_name
+  description = "The DNS name of the FSx for Lustre filesystem"
+  value       = module.fsx.dns_name
 }
 
 output "s3_bucket_name" {
-  description = "Name of the created S3 bucket"
+  description = "The name of the S3 bucket"
   value       = module.s3.bucket_name
 }
 
@@ -45,4 +43,9 @@ output "cloudwatch_dashboard_name" {
 output "auto_shutdown_lambda_name" {
   description = "Name of the auto-shutdown Lambda function"
   value       = module.auto_shutdown.lambda_function_name
+}
+
+output "cluster_endpoint" {
+  description = "The endpoint of the ParallelCluster"
+  value       = module.parallelcluster.cluster_endpoint
 } 

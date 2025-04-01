@@ -1,8 +1,7 @@
-"""
-S3 bucket configuration for data storage.
-"""
+# S3 bucket configuration for data storage.
 
-resource "aws_s3_bucket" "data_bucket" {
+# Create S3 bucket for HPC data
+resource "aws_s3_bucket" "hpc_data" {
   bucket = "${var.project_name}-${var.environment}-data"
 
   # Enable versioning for data protection
@@ -56,7 +55,7 @@ resource "aws_s3_bucket" "data_bucket" {
 
 # Bucket policy for secure access
 resource "aws_s3_bucket_policy" "data_bucket_policy" {
-  bucket = aws_s3_bucket.data_bucket.id
+  bucket = aws_s3_bucket.hpc_data.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -67,8 +66,8 @@ resource "aws_s3_bucket_policy" "data_bucket_policy" {
         Principal = "*"
         Action    = "s3:*"
         Resource = [
-          aws_s3_bucket.data_bucket.arn,
-          "${aws_s3_bucket.data_bucket.arn}/*"
+          aws_s3_bucket.hpc_data.arn,
+          "${aws_s3_bucket.hpc_data.arn}/*"
         ]
         Condition = {
           Bool = {
@@ -82,10 +81,49 @@ resource "aws_s3_bucket_policy" "data_bucket_policy" {
 
 # Block public access
 resource "aws_s3_bucket_public_access_block" "data_bucket" {
-  bucket = aws_s3_bucket.data_bucket.id
+  bucket = aws_s3_bucket.hpc_data.id
 
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+# Enable versioning
+resource "aws_s3_bucket_versioning" "hpc_data" {
+  bucket = aws_s3_bucket.hpc_data.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# Configure lifecycle rules
+resource "aws_s3_bucket_lifecycle_configuration" "hpc_data" {
+  bucket = aws_s3_bucket.hpc_data.id
+
+  rule {
+    id     = "archive_old_data"
+    status = "Enabled"
+
+    transition {
+      days          = 90
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 180
+      storage_class = "GLACIER"
+    }
+  }
+}
+
+# Configure server-side encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "hpc_data" {
+  bucket = aws_s3_bucket.hpc_data.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
 } 

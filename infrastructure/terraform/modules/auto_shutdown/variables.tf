@@ -1,6 +1,4 @@
-"""
-Variables for auto-shutdown module configuration.
-"""
+# Variables for auto-shutdown module configuration.
 
 variable "project_name" {
   description = "Name of the project"
