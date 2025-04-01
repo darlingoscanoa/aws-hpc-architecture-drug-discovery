@@ -1,15 +1,13 @@
-"""
-Outputs for the FSx module.
-"""
+# Outputs for the FSx module.
 
 output "fsx_id" {
-  description = "ID of the created FSx for Lustre filesystem"
-  value       = aws_fsx_lustre_file_system.fsx.id
+  description = "ID of the FSx for Lustre filesystem"
+  value       = aws_fsx_lustre_file_system.hpc.id
 }
 
-output "fsx_dns_name" {
+output "dns_name" {
   description = "DNS name of the FSx for Lustre filesystem"
-  value       = aws_fsx_lustre_file_system.fsx.dns_name
+  value       = aws_fsx_lustre_file_system.hpc.dns_name
 }
 
 output "fsx_mount_name" {
@@ -18,6 +16,6 @@ output "fsx_mount_name" {
 }
 
 output "security_group_id" {
-  description = "ID of the security group created for FSx"
+  description = "ID of the security group for FSx"
   value       = aws_security_group.fsx.id
 } 

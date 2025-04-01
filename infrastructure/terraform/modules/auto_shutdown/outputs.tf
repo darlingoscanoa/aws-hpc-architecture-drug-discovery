@@ -1,6 +1,4 @@
-"""
-Outputs for the auto-shutdown module.
-"""
+# Outputs for the auto-shutdown module.
 
 output "lambda_function_name" {
   description = "Name of the auto-shutdown Lambda function"

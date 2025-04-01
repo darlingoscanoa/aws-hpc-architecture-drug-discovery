@@ -1,15 +1,13 @@
-"""
-Outputs for the CloudWatch module.
-"""
+# Outputs for the CloudWatch module.
 
 output "log_group_name" {
   description = "Name of the CloudWatch log group"
-  value       = aws_cloudwatch_log_group.cluster_logs.name
+  value       = aws_cloudwatch_log_group.hpc.name
 }
 
 output "dashboard_name" {
   description = "Name of the CloudWatch dashboard"
-  value       = aws_cloudwatch_dashboard.cluster_dashboard.dashboard_name
+  value       = aws_cloudwatch_dashboard.hpc.dashboard_name
 }
 
 output "cpu_alarm_name" {

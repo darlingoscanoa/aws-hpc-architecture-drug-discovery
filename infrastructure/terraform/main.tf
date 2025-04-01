@@ -90,20 +90,4 @@ module "auto_shutdown" {
   environment            = var.environment
   shutdown_hour         = var.shutdown_hour
   shutdown_threshold_hours = var.shutdown_threshold_hours
-}
-
-# Outputs
-output "cluster_endpoint" {
-  description = "The endpoint of the ParallelCluster"
-  value       = module.parallelcluster.cluster_endpoint
-}
-
-output "fsx_dns_name" {
-  description = "The DNS name of the FSx for Lustre filesystem"
-  value       = module.fsx.dns_name
-}
-
-output "s3_bucket_name" {
-  description = "The name of the S3 bucket"
-  value       = module.s3.bucket_name
 } 
