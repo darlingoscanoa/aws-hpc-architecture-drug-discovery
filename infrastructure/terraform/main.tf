@@ -11,9 +11,9 @@ terraform {
       source  = "hashicorp/awscc"
       version = "~> 0.1"
     }
-    aws-parallelcluster = {
-      source  = "aws/aws-parallelcluster"
-      version = "~> 1.0"
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.0"
     }
   }
   
@@ -27,12 +27,16 @@ terraform {
 # Configure AWS provider
 provider "aws" {
   region = var.aws_region
+  
+  # Optional: Add specific configurations for ParallelCluster API endpoints
+  endpoints {
+    ec2 = "https://ec2.${var.aws_region}.amazonaws.com"
+    iam = "https://iam.amazonaws.com"
+    s3  = "https://s3.${var.aws_region}.amazonaws.com"
+  }
 }
 
-# Configure AWS ParallelCluster provider
-provider "aws-parallelcluster" {
-  region = var.aws_region
-}
+provider "null" {}
 
 # VPC module
 module "vpc" {
