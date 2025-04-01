@@ -1,47 +1,111 @@
 # AWS ParallelCluster configuration for HPC infrastructure.
 
-# Create ParallelCluster configuration
-resource "aws_parallelcluster" "hpc" {
-  name = "${var.project_name}-${var.environment}-cluster"
-  cluster_configuration = jsonencode({
-    HeadNode = {
-      InstanceType = var.head_node_instance_type
-      Networking = {
-        SubnetId = var.subnet_id
-        SecurityGroups = [aws_security_group.cluster.id]
-      }
-      Ssh = {
-        KeyName = var.key_name
-      }
-    }
-    ComputeResources = {
-      Name = "ComputeFleet"
-      InstanceType = var.compute_node_instance_type
-      MinCount = var.min_compute_nodes
-      MaxCount = var.max_compute_nodes
-      DesiredCount = var.desired_compute_nodes
-      SpotPrice = var.spot_price
-    }
-    SharedStorage = {
-      Name = "Shared"
-      StorageType = "FsxLustre"
-      MountDir = "/shared"
-      FsxLustreSettings = {
-        StorageCapacity = 1200
-        DeploymentType = "SCRATCH_2"
-        StorageType = "SSD"
-      }
-    }
-    Region = var.aws_region
-    Image = {
-      Os = "alinux2"
-      CustomAmi = var.ami_id
-    }
-    Tags = {
-      Name = "${var.project_name}-${var.environment}-cluster"
+# Launch template for head node
+resource "aws_launch_template" "head_node" {
+  name_prefix   = "${var.project_name}-head-"
+  image_id      = var.ami_id
+  instance_type = var.head_node_instance_type
+
+  network_interfaces {
+    subnet_id = var.subnet_id
+    security_groups = [aws_security_group.cluster.id]
+  }
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.head_node.name
+  }
+
+  user_data = base64encode(<<-EOF
+              #!/bin/bash
+              # ParallelCluster head node setup
+              yum install -y amazon-efs-utils
+              # Additional setup commands
+              EOF
+  )
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "${var.project_name}-${var.environment}-head"
       Environment = var.environment
     }
-  })
+  }
+}
+
+# Launch template for compute nodes
+resource "aws_launch_template" "compute_node" {
+  name_prefix   = "${var.project_name}-compute-"
+  image_id      = var.ami_id
+  instance_type = var.compute_node_instance_type
+
+  network_interfaces {
+    subnet_id = var.subnet_id
+    security_groups = [aws_security_group.cluster.id]
+  }
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.compute_node.name
+  }
+
+  user_data = base64encode(<<-EOF
+              #!/bin/bash
+              # ParallelCluster compute node setup
+              yum install -y amazon-efs-utils
+              # Additional setup commands
+              EOF
+  )
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "${var.project_name}-${var.environment}-compute"
+      Environment = var.environment
+    }
+  }
+}
+
+# Auto Scaling Group for compute nodes
+resource "aws_autoscaling_group" "compute_nodes" {
+  name                = "${var.project_name}-compute"
+  desired_capacity    = var.desired_compute_nodes
+  max_size           = var.max_compute_nodes
+  min_size           = var.min_compute_nodes
+  vpc_zone_identifier = [var.subnet_id]
+
+  mixed_instances_policy {
+    instances_distribution {
+      on_demand_base_capacity                  = 0
+      on_demand_percentage_above_base_capacity = 0
+      spot_allocation_strategy                 = "capacity-optimized"
+      spot_max_price                          = var.spot_price
+    }
+
+    launch_template {
+      launch_template_specification {
+        launch_template_id = aws_launch_template.compute_node.id
+        version           = "$Latest"
+      }
+    }
+  }
+
+  tag {
+    key                 = "Name"
+    value              = "${var.project_name}-${var.environment}-compute"
+    propagate_at_launch = true
+  }
+}
+
+# Head node instance
+resource "aws_instance" "head_node" {
+  launch_template {
+    id      = aws_launch_template.head_node.id
+    version = "$Latest"
+  }
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-head"
+    Environment = var.environment
+  }
 }
 
 # Security group for the cluster
@@ -54,6 +118,13 @@ resource "aws_security_group" "cluster" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
   }
 
   egress {
@@ -69,7 +140,7 @@ resource "aws_security_group" "cluster" {
   }
 }
 
-# Create IAM roles and instance profiles
+# IAM roles and instance profiles
 resource "aws_iam_role" "head_node" {
   name = "${var.project_name}-head-node-role"
   
@@ -114,13 +185,13 @@ resource "aws_iam_instance_profile" "compute_node" {
   role = aws_iam_role.compute_node.name
 }
 
-# Attach necessary policies
-resource "aws_iam_role_policy_attachment" "head_node_s3" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+# IAM policies for the roles
+resource "aws_iam_role_policy_attachment" "head_node_ssm" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   role       = aws_iam_role.head_node.name
 }
 
-resource "aws_iam_role_policy_attachment" "compute_node_s3" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+resource "aws_iam_role_policy_attachment" "compute_node_ssm" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   role       = aws_iam_role.compute_node.name
-} 
+}
