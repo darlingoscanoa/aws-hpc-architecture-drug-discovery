@@ -27,23 +27,25 @@ variable "vpc_cidr" {
 variable "key_name" {
   description = "Name of the SSH key pair for cluster access"
   type        = string
+  default     = "hpc-key"
 }
 
 variable "head_node_instance_type" {
   description = "EC2 instance type for the head node"
   type        = string
-  default     = "c5.xlarge"
+  default     = "g4dn.xlarge"
 }
 
 variable "compute_node_instance_type" {
   description = "EC2 instance type for compute nodes"
   type        = string
-  default     = "hpc6a.48xlarge"
+  default     = "g4dn.2xlarge"
 }
 
 variable "ami_id" {
   description = "AMI ID for cluster nodes"
   type        = string
+  default     = "/aws/service/parallelcluster/3.7/alinux2/ami_id/latest"
 }
 
 variable "min_compute_nodes" {
@@ -61,13 +63,13 @@ variable "max_compute_nodes" {
 variable "desired_compute_nodes" {
   description = "Desired number of compute nodes"
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "spot_price" {
   description = "Maximum spot price for compute nodes"
-  type        = number
-  default     = 0.0
+  type        = string
+  default     = "1.00"
 }
 
 variable "fsx_storage_capacity" {
@@ -79,16 +81,17 @@ variable "fsx_storage_capacity" {
 variable "sns_topic_arn" {
   description = "ARN of the SNS topic for alarm notifications"
   type        = string
+  default     = ""
 }
 
 variable "shutdown_hour" {
   description = "Hour of the day to trigger shutdown (0-23)"
   type        = number
-  default     = 22
+  default     = 18
 }
 
 variable "shutdown_threshold_hours" {
   description = "Number of hours of inactivity before shutdown"
   type        = number
-  default     = 4
+  default     = 2
 } 
