@@ -1,0 +1,5 @@
+Gene,Brain_level,Liver_level,Heart_level,Kidney_level
+ENSG1,High,Medium,Low,High
+ENSG2,Medium,High,High,Medium
+ENSG3,Low,Not detected,Medium,Low
+ENSG4,Not detected,Low,Not detected,High

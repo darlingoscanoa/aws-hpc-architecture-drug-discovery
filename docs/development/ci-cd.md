@@ -237,3 +237,14 @@ Main branch protection rules:
    - Enhanced metrics
    - Better alerting
    - Cost optimization 
+
+graph TD
+    A[src/training/train.py] --> B[src/inference/predict.py]
+    A --> C[src/evaluation/compare_models.py]
+    D[docker-compose.yml] --> E[docker/training/Dockerfile]
+    D --> F[docker/inference/Dockerfile]
+    D --> G[docker/preprocessing/Dockerfile]
+    H[infrastructure/terraform/main.tf] --> I[infrastructure/terraform/modules/*]
+    J[.github/workflows/ci-cd.yml] --> H
+    J --> A
+    J --> C 
