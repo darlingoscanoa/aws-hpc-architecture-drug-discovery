@@ -1,47 +1,70 @@
 # AWS ParallelCluster configuration for HPC infrastructure.
 
 # Create ParallelCluster configuration
-resource "aws_parallelcluster_cluster" "hpc" {
-  cluster_name = "${var.project_name}-${var.environment}"
-  
-  head_node {
-    instance_type = var.head_node_instance_type
-    subnet_id     = var.subnet_id
-    key_name      = var.key_name
-    
-    iam_instance_profile {
-      name = aws_iam_instance_profile.head_node.name
+resource "aws_parallelcluster" "hpc" {
+  cluster_name = "${var.project_name}-${var.environment}-cluster"
+  cluster_configuration = jsonencode({
+    HeadNode = {
+      InstanceType = var.head_node_instance_type
+      Networking = {
+        SubnetId = var.subnet_id
+        SecurityGroups = [aws_security_group.cluster.id]
+      }
+      Ssh = {
+        KeyName = var.key_name
+      }
     }
-  }
-  
-  compute_resources {
-    name                 = "compute"
-    instance_type        = var.compute_node_instance_type
-    min_count           = var.min_compute_nodes
-    max_count           = var.max_compute_nodes
-    desired_count       = var.desired_compute_nodes
-    spot_price          = var.spot_price
-    subnet_id           = var.subnet_id
-    
-    iam_instance_profile {
-      name = aws_iam_instance_profile.compute_node.name
+    ComputeResources = {
+      Name = "ComputeFleet"
+      InstanceType = var.compute_node_instance_type
+      MinCount = var.min_compute_nodes
+      MaxCount = var.max_compute_nodes
+      DesiredCount = var.desired_compute_nodes
+      SpotPrice = var.spot_price
     }
-  }
-  
-  shared_storage {
-    name      = "fsx"
-    type      = "fsx_lustre"
-    mount_dir = "/fsx"
-    
-    fsx_lustre {
-      deployment_type = "PERSISTENT_1"
-      per_unit_storage_throughput = 200
-      storage_capacity = var.fsx_storage_capacity
+    SharedStorage = {
+      Name = "Shared"
+      StorageType = "FsxLustre"
+      MountDir = "/shared"
+      FsxLustreSettings = {
+        StorageCapacity = 1200
+        DeploymentType = "SCRATCH_2"
+        StorageType = "SSD"
+      }
     }
+    Region = var.aws_region
+    Image = {
+      Os = "alinux2"
+      CustomAmi = var.ami_id
+    }
+    Tags = {
+      Name = "${var.project_name}-${var.environment}-cluster"
+      Environment = var.environment
+    }
+  })
+}
+
+# Security group for the cluster
+resource "aws_security_group" "cluster" {
+  name_prefix = "${var.project_name}-${var.environment}-cluster"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   tags = {
-    Name        = "${var.project_name}-cluster"
+    Name        = "${var.project_name}-${var.environment}-cluster"
     Environment = var.environment
   }
 }
