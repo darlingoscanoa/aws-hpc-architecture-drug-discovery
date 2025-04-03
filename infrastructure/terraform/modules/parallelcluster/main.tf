@@ -1,37 +1,5 @@
 # AWS ParallelCluster configuration for HPC infrastructure.
 
-# Launch template for head node
-resource "aws_launch_template" "head_node" {
-  name_prefix   = "${var.project_name}-head-"
-  image_id      = var.ami_id
-  instance_type = var.head_node_instance_type
-
-  network_interfaces {
-    subnet_id = var.subnet_id
-    security_groups = [aws_security_group.cluster.id]
-  }
-
-  iam_instance_profile {
-    name = aws_iam_instance_profile.head_node.name
-  }
-
-  user_data = base64encode(<<-EOF
-              #!/bin/bash
-              # ParallelCluster head node setup
-              yum install -y amazon-efs-utils
-              # Additional setup commands
-              EOF
-  )
-
-  tag_specifications {
-    resource_type = "instance"
-    tags = {
-      Name = "${var.project_name}-${var.environment}-head"
-      Environment = var.environment
-    }
-  }
-}
-
 # Launch template for compute nodes
 resource "aws_launch_template" "compute_node" {
   name_prefix   = "${var.project_name}-compute-"
@@ -49,18 +17,65 @@ resource "aws_launch_template" "compute_node" {
 
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              # ParallelCluster compute node setup
-              yum install -y amazon-efs-utils
-              # Additional setup commands
+              yum install -y amazon-efs-utils nvidia-driver
+              # Mount shared storage
+              mkdir -p /shared
+              mount -t nfs4 ${aws_efs_file_system.shared.dns_name}:/ /shared
+              # GPU setup for ML workloads
+              nvidia-smi -pm 1
               EOF
   )
 
-  tag_specifications {
-    resource_type = "instance"
-    tags = {
-      Name = "${var.project_name}-${var.environment}-compute"
-      Environment = var.environment
-    }
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-compute"
+    Environment = var.environment
+  }
+
+  monitoring {
+    enabled = true
+  }
+}
+
+# Head node instance
+resource "aws_instance" "head_node" {
+  ami           = var.ami_id
+  instance_type = var.head_node_instance_type
+  subnet_id     = var.subnet_id
+  vpc_security_group_ids = [aws_security_group.cluster.id]
+  iam_instance_profile = aws_iam_instance_profile.head_node.name
+
+  user_data = base64encode(<<-EOF
+              #!/bin/bash
+              # Install required packages
+              yum install -y amazon-efs-utils nvidia-driver slurm
+              
+              # Mount shared storage
+              mkdir -p /shared
+              mount -t nfs4 ${aws_efs_file_system.shared.dns_name}:/ /shared
+              
+              # Configure SLURM
+              cat > /etc/slurm/slurm.conf <<'EOL'
+              ClusterName=${var.project_name}
+              SlurmctldHost=$(hostname)
+              
+              # Node configurations
+              NodeName=compute[1-${var.max_compute_nodes}] CPUs=${var.compute_node_vcpus} State=UNKNOWN
+              PartitionName=gpu Nodes=compute[1-${var.max_compute_nodes}] Default=YES MaxTime=INFINITE State=UP
+              EOL
+              
+              # Start SLURM services
+              systemctl enable --now slurmctld
+              EOF
+  )
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-head"
+    Environment = var.environment
+  }
+
+  root_block_device {
+    volume_size = 100
+    volume_type = "gp3"
   }
 }
 
@@ -95,17 +110,44 @@ resource "aws_autoscaling_group" "compute_nodes" {
   }
 }
 
-# Head node instance
-resource "aws_instance" "head_node" {
-  launch_template {
-    id      = aws_launch_template.head_node.id
-    version = "$Latest"
-  }
+# Shared Storage - EFS for HPC workloads
+resource "aws_efs_file_system" "shared" {
+  creation_token = "${var.project_name}-shared-storage"
+  performance_mode = "maxIO"
+  throughput_mode = "provisioned"
+  provisioned_throughput_in_mibps = 1024
 
   tags = {
-    Name        = "${var.project_name}-${var.environment}-head"
+    Name        = "${var.project_name}-shared"
     Environment = var.environment
   }
+}
+
+resource "aws_efs_mount_target" "shared" {
+  file_system_id = aws_efs_file_system.shared.id
+  subnet_id      = var.subnet_id
+  security_groups = [aws_security_group.cluster.id]
+}
+
+# CloudWatch Dashboard for monitoring
+resource "aws_cloudwatch_dashboard" "hpc" {
+  dashboard_name = "${var.project_name}-metrics"
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type = "metric"
+        properties = {
+          metrics = [
+            ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", aws_autoscaling_group.compute_nodes.name],
+            ["AWS/EC2", "GPUUtilization", "AutoScalingGroupName", aws_autoscaling_group.compute_nodes.name]
+          ]
+          period = 300
+          stat   = "Average"
+          title  = "Cluster Resource Utilization"
+        }
+      }
+    ]
+  })
 }
 
 # Security group for the cluster
@@ -118,6 +160,22 @@ resource "aws_security_group" "cluster" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 6817
+    to_port     = 6819
+    protocol    = "tcp"
+    self        = true
+    description = "Slurm"
+  }
+
+  ingress {
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    self        = true
+    description = "NFS"
   }
 
   ingress {
@@ -185,7 +243,7 @@ resource "aws_iam_instance_profile" "compute_node" {
   role = aws_iam_role.compute_node.name
 }
 
-# IAM policies for the roles
+# IAM policies
 resource "aws_iam_role_policy_attachment" "head_node_ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   role       = aws_iam_role.head_node.name
@@ -194,4 +252,24 @@ resource "aws_iam_role_policy_attachment" "head_node_ssm" {
 resource "aws_iam_role_policy_attachment" "compute_node_ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   role       = aws_iam_role.compute_node.name
+}
+
+resource "aws_iam_role_policy" "cloudwatch_policy" {
+  name = "${var.project_name}-cloudwatch-policy"
+  role = aws_iam_role.compute_node.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudwatch:PutMetricData",
+          "cloudwatch:GetMetricStatistics",
+          "cloudwatch:ListMetrics"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 }

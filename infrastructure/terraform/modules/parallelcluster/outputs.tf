@@ -1,31 +1,36 @@
 # Outputs for the ParallelCluster module.
 
-output "cluster_id" {
-  description = "ID of the created ParallelCluster"
-  value       = aws_parallelcluster.hpc.id
-}
-
-output "cluster_name" {
-  description = "Name of the created ParallelCluster"
-  value       = aws_parallelcluster.hpc.name
+output "head_node_id" {
+  description = "ID of the head node instance"
+  value       = aws_instance.head_node.id
 }
 
 output "head_node_public_ip" {
-  description = "Public IP address of the head node"
-  value       = aws_parallelcluster.hpc.head_node_public_ip
+  description = "Public IP of the head node"
+  value       = aws_instance.head_node.public_ip
 }
 
-output "compute_nodes_private_ips" {
-  description = "Private IP addresses of compute nodes"
-  value       = aws_parallelcluster.hpc.compute_nodes_private_ips
+output "compute_asg_name" {
+  description = "Name of the compute nodes Auto Scaling Group"
+  value       = aws_autoscaling_group.compute_nodes.name
 }
 
-output "fsx_lustre_id" {
-  description = "ID of the FSx for Lustre filesystem"
-  value       = aws_parallelcluster.hpc.shared_storage.fsx_lustre.id
+output "shared_storage_dns" {
+  description = "DNS name of the shared EFS storage"
+  value       = aws_efs_file_system.shared.dns_name
 }
 
-output "cluster_endpoint" {
-  description = "The endpoint of the ParallelCluster"
-  value       = aws_parallelcluster.hpc.endpoint
-} 
+output "dashboard_name" {
+  description = "Name of the CloudWatch dashboard for HPC metrics"
+  value       = aws_cloudwatch_dashboard.hpc.dashboard_name
+}
+
+output "security_group_id" {
+  description = "ID of the cluster security group"
+  value       = aws_security_group.cluster.id
+}
+
+output "slurm_config_path" {
+  description = "Path to the SLURM configuration file"
+  value       = "/etc/slurm/slurm.conf"
+}
