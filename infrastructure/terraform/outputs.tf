@@ -5,14 +5,9 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
-output "cluster_id" {
-  description = "ID of the created ParallelCluster"
-  value       = module.parallelcluster.cluster_id
-}
-
-output "cluster_name" {
-  description = "Name of the created ParallelCluster"
-  value       = module.parallelcluster.cluster_name
+output "head_node_id" {
+  description = "ID of the head node instance"
+  value       = module.parallelcluster.head_node_id
 }
 
 output "head_node_public_ip" {
@@ -20,14 +15,24 @@ output "head_node_public_ip" {
   value       = module.parallelcluster.head_node_public_ip
 }
 
-output "fsx_id" {
-  description = "ID of the created FSx for Lustre filesystem"
-  value       = module.fsx.fsx_id
+output "compute_asg_name" {
+  description = "Name of the compute nodes Auto Scaling Group"
+  value       = module.parallelcluster.compute_asg_name
 }
 
-output "fsx_dns_name" {
-  description = "The DNS name of the FSx for Lustre filesystem"
-  value       = module.fsx.dns_name
+output "shared_storage_dns" {
+  description = "DNS name of the shared EFS storage"
+  value       = module.parallelcluster.shared_storage_dns
+}
+
+output "dashboard_name" {
+  description = "Name of the CloudWatch dashboard for HPC metrics"
+  value       = module.parallelcluster.dashboard_name
+}
+
+output "slurm_config_path" {
+  description = "Path to the SLURM configuration file"
+  value       = module.parallelcluster.slurm_config_path
 }
 
 output "s3_bucket_name" {
@@ -44,8 +49,3 @@ output "auto_shutdown_lambda_name" {
   description = "Name of the auto-shutdown Lambda function"
   value       = module.auto_shutdown.lambda_function_name
 }
-
-output "cluster_endpoint" {
-  description = "The endpoint of the ParallelCluster"
-  value       = module.parallelcluster.cluster_endpoint
-} 
