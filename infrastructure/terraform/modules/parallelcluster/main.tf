@@ -6,7 +6,7 @@ resource "aws_launch_template" "compute_node" {
   image_id      = "ami-0557a15b87f6559cf"  # Amazon Linux 2 with NVIDIA drivers
   instance_type = var.compute_node_instance_type
 
-  network_interface {
+  network_interfaces {
     associate_public_ip_address = false
     security_groups            = [aws_security_group.cluster.id]
   }
