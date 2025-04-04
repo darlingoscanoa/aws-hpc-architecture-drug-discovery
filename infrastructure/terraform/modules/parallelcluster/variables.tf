@@ -6,17 +6,17 @@ variable "project_name" {
 }
 
 variable "environment" {
-  description = "Environment name (e.g., dev, prod)"
+  description = "Environment (e.g. dev, prod)"
   type        = string
 }
 
 variable "vpc_id" {
-  description = "ID of the VPC"
+  description = "VPC ID"
   type        = string
 }
 
 variable "subnet_id" {
-  description = "ID of the subnet for head node and EFS mount target"
+  description = "Subnet ID for head node"
   type        = string
 }
 
@@ -26,32 +26,32 @@ variable "subnet_ids" {
 }
 
 variable "key_name" {
-  description = "Name of the SSH key pair"
+  description = "SSH key pair name"
   type        = string
 }
 
 variable "head_node_instance_type" {
   description = "Instance type for head node"
   type        = string
-  default     = "c5.2xlarge"
+  default     = "t3.micro"  # Minimal instance for testing
 }
 
 variable "compute_node_instance_type" {
   description = "Instance type for compute nodes"
   type        = string
-  default     = "g4dn.xlarge"
+  default     = "t3.micro"  # Minimal instance for testing
 }
 
 variable "compute_node_vcpus" {
-  description = "Number of vCPUs per compute node for SLURM configuration"
+  description = "Number of vCPUs per compute node"
   type        = number
-  default     = 4  # g4dn.xlarge has 4 vCPUs
+  default     = 2  # t3.micro has 2 vCPUs
 }
 
 variable "ami_id" {
   description = "AMI ID for cluster nodes"
   type        = string
-  default     = "ami-0557a15b87f6559cf"  # Amazon Linux 2 with NVIDIA drivers
+  default     = "ami-0557a15b87f6559cf"  # Amazon Linux 2 AMI
 }
 
 variable "min_compute_nodes" {
@@ -63,7 +63,7 @@ variable "min_compute_nodes" {
 variable "max_compute_nodes" {
   description = "Maximum number of compute nodes"
   type        = number
-  default     = 10
+  default     = 1  # Reduced to 1 for testing
 }
 
 variable "desired_compute_nodes" {
@@ -73,13 +73,13 @@ variable "desired_compute_nodes" {
 }
 
 variable "spot_price" {
-  description = "Maximum spot price for compute nodes"
-  type        = number
-  default     = 1.0
+  description = "Spot price for compute nodes"
+  type        = string
+  default     = null
 }
 
 variable "s3_bucket_name" {
-  description = "Name of the S3 bucket for cluster data"
+  description = "Name of S3 bucket for data storage"
   type        = string
 }
 

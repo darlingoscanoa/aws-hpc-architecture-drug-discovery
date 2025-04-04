@@ -1,18 +1,49 @@
 # FSx for Lustre filesystem configuration for high-performance storage.
 
-# Create FSx for Lustre filesystem
-resource "aws_fsx_lustre_file_system" "hpc" {
-  storage_capacity              = var.storage_capacity
-  subnet_ids                    = [var.subnet_ids[0]]  # Use first subnet only
-  deployment_type              = "SCRATCH_2"
-  storage_type                 = "SSD"
-  per_unit_storage_throughput = 1000
-  security_group_ids          = [aws_security_group.fsx.id]
-  automatic_backup_retention_days = 7
+# Security group for FSx
+resource "aws_security_group" "fsx" {
+  name_prefix = "${var.project_name}-fsx-"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port       = 988
+    to_port         = 988
+    protocol        = "tcp"
+    security_groups = var.security_group_ids
+  }
+
+  ingress {
+    from_port       = 1021
+    to_port         = 1023
+    protocol        = "tcp"
+    security_groups = var.security_group_ids
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = {
-    Name        = "${var.project_name}-${var.environment}-fsx"
+    Name        = "${var.project_name}-fsx-sg"
     Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# Create FSx for Lustre filesystem
+resource "aws_fsx_lustre_file_system" "hpc" {
+  storage_capacity    = var.storage_capacity
+  subnet_ids         = var.subnet_ids
+  deployment_type    = "SCRATCH_2"
+  security_group_ids = [aws_security_group.fsx.id]
+
+  tags = {
+    Name        = "${var.project_name}-fsx"
+    Environment = var.environment
+    Project     = var.project_name
   }
 }
 
@@ -27,29 +58,3 @@ resource "aws_fsx_data_repository_association" "hpc" {
     Environment = var.environment
   }
 }
-
-# Security group for FSx
-resource "aws_security_group" "fsx" {
-  name        = "${var.project_name}-${var.environment}-fsx-sg"
-  description = "Security group for FSx for Lustre"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 988
-    to_port     = 988
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-fsx-sg"
-    Environment = var.environment
-  }
-} 
