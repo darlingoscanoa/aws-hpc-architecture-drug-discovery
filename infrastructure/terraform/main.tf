@@ -65,6 +65,8 @@ module "fsx" {
   subnet_id         = module.vpc.private_subnet_ids[0]  # Use first private subnet
   security_group_ids = [module.parallelcluster.cluster_security_group_id]
   storage_capacity   = 1200  # GB
+  vpc_cidr          = module.vpc.vpc_cidr
+  s3_bucket_name    = module.s3.bucket_name
 }
 
 # ParallelCluster module
@@ -83,6 +85,7 @@ module "parallelcluster" {
   max_compute_nodes       = var.max_compute_nodes
   desired_compute_nodes   = var.desired_compute_nodes
   s3_bucket_name         = module.s3.bucket_name
+  fsx_filesystem_id = module.fsx.file_system_id
 }
 
 # CloudWatch module
@@ -102,5 +105,8 @@ module "auto_shutdown" {
   
   project_name = var.project_name
   environment  = var.environment
+  vpc_id       = module.vpc.vpc_id
+  subnet_id    = module.vpc.private_subnet_ids[0]
+  cluster_security_group_id = module.parallelcluster.cluster_security_group_id
   shutdown_hour = var.shutdown_hour
 }
