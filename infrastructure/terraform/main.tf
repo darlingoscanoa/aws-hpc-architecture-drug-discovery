@@ -73,19 +73,17 @@ module "fsx" {
 module "parallelcluster" {
   source = "./modules/parallelcluster"
   
-  project_name           = var.project_name
-  environment            = var.environment
-  vpc_id                 = module.vpc.vpc_id
-  subnet_id              = module.vpc.private_subnet_ids[0]
-  key_name               = var.key_name
+  project_name             = var.project_name
+  environment              = var.environment
+  vpc_id                  = module.vpc.vpc_id
+  subnet_id               = module.vpc.private_subnet_ids[0]
+  subnet_ids              = module.vpc.private_subnet_ids
+  key_name                = var.key_name
   head_node_instance_type = var.head_node_instance_type
   compute_node_instance_type = var.compute_node_instance_type
-  ami_id                 = var.ami_id
-  min_compute_nodes      = var.min_compute_nodes
-  max_compute_nodes      = var.max_compute_nodes
-  desired_compute_nodes  = var.desired_compute_nodes
-  spot_price            = var.spot_price
-  s3_bucket_name        = module.s3.bucket_name
+  min_compute_nodes       = var.min_compute_nodes
+  max_compute_nodes       = var.max_compute_nodes
+  desired_compute_nodes   = var.desired_compute_nodes
 }
 
 # CloudWatch module
@@ -103,8 +101,7 @@ module "cloudwatch" {
 module "auto_shutdown" {
   source = "./modules/auto_shutdown"
   
-  project_name           = var.project_name
-  environment            = var.environment
-  shutdown_hour         = var.shutdown_hour
-  shutdown_threshold_hours = var.shutdown_threshold_hours
-} 
+  project_name = var.project_name
+  environment  = var.environment
+  shutdown_hour = var.shutdown_hour
+}
