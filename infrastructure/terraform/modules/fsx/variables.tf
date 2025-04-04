@@ -10,14 +10,25 @@ variable "environment" {
   type        = string
 }
 
+variable "vpc_id" {
+  description = "ID of the VPC"
+  type        = string
+}
+
+variable "subnet_id" {
+  description = "Subnet ID for FSx filesystem"
+  type        = string
+}
+
+variable "security_group_ids" {
+  description = "List of security group IDs"
+  type        = list(string)
+}
+
 variable "storage_capacity" {
   description = "Storage capacity in GB"
   type        = number
-}
-
-variable "subnet_ids" {
-  description = "List of subnet IDs for FSx deployment"
-  type        = list(string)
+  default     = 1200
 }
 
 variable "deployment_type" {
@@ -32,11 +43,6 @@ variable "storage_type" {
   default     = "SSD"
 }
 
-variable "security_group_ids" {
-  description = "List of security group IDs"
-  type        = list(string)
-}
-
 variable "maintenance_start_time" {
   description = "Weekly maintenance start time"
   type        = string
@@ -48,12 +54,7 @@ variable "s3_bucket_name" {
   type        = string
 }
 
-variable "vpc_id" {
-  description = "ID of the VPC"
-  type        = string
-}
-
 variable "vpc_cidr" {
   description = "CIDR block of the VPC"
   type        = string
-} 
+}
