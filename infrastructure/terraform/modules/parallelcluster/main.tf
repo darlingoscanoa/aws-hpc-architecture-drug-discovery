@@ -3,7 +3,7 @@
 # Launch template for compute nodes
 resource "aws_launch_template" "compute_node" {
   name_prefix   = "${var.project_name}-compute-"
-  image_id      = "ami-0557a15b87f6559cf"  # Amazon Linux 2 with NVIDIA drivers
+  image_id      = var.ami_id
   instance_type = var.compute_node_instance_type
 
   network_interfaces {
@@ -35,7 +35,7 @@ resource "aws_launch_template" "compute_node" {
 
 # Head node instance
 resource "aws_instance" "head_node" {
-  ami           = "ami-0557a15b87f6559cf"  # Amazon Linux 2 with NVIDIA drivers
+  ami           = var.ami_id
   instance_type = var.head_node_instance_type
   subnet_id     = var.subnet_id
   key_name      = var.key_name
@@ -109,7 +109,6 @@ resource "aws_autoscaling_group" "compute" {
   desired_capacity    = var.desired_compute_nodes
   max_size           = var.max_compute_nodes
   min_size           = var.min_compute_nodes
-  target_group_arns  = []
   vpc_zone_identifier = var.subnet_ids
 
   launch_template {
@@ -155,16 +154,18 @@ resource "aws_security_group" "cluster" {
   }
 }
 
-# EFS for shared storage
+# Shared storage using EFS
 resource "aws_efs_file_system" "shared" {
   creation_token = "${var.project_name}-shared-storage"
   encrypted      = true
+  throughput_mode = "bursting"
 
   tags = {
     Name = "${var.project_name}-shared-storage"
   }
 }
 
+# Mount target for EFS
 resource "aws_efs_mount_target" "shared" {
   file_system_id  = aws_efs_file_system.shared.id
   subnet_id       = var.subnet_id
