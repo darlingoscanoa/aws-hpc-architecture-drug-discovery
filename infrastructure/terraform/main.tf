@@ -84,6 +84,7 @@ module "parallelcluster" {
   min_compute_nodes       = var.min_compute_nodes
   max_compute_nodes       = var.max_compute_nodes
   desired_compute_nodes   = var.desired_compute_nodes
+  s3_bucket_name         = module.s3.bucket_name
 }
 
 # CloudWatch module

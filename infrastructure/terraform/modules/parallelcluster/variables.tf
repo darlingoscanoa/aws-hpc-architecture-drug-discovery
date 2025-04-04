@@ -51,6 +51,7 @@ variable "compute_node_vcpus" {
 variable "ami_id" {
   description = "AMI ID for cluster nodes"
   type        = string
+  default     = "ami-0557a15b87f6559cf"  # Amazon Linux 2 with NVIDIA drivers
 }
 
 variable "min_compute_nodes" {
