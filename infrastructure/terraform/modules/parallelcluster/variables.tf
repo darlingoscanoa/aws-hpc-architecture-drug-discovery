@@ -16,8 +16,13 @@ variable "vpc_id" {
 }
 
 variable "subnet_id" {
-  description = "ID of the subnet for cluster deployment"
+  description = "ID of the subnet for head node and EFS mount target"
   type        = string
+}
+
+variable "subnet_ids" {
+  description = "List of subnet IDs for compute nodes"
+  type        = list(string)
 }
 
 variable "key_name" {
@@ -63,7 +68,7 @@ variable "max_compute_nodes" {
 variable "desired_compute_nodes" {
   description = "Desired number of compute nodes"
   type        = number
-  default     = 1
+  default     = 0
 }
 
 variable "spot_price" {

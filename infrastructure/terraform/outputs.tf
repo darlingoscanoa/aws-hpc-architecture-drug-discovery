@@ -25,11 +25,6 @@ output "shared_storage_dns" {
   value       = module.parallelcluster.shared_storage_dns
 }
 
-output "dashboard_name" {
-  description = "Name of the CloudWatch dashboard for HPC metrics"
-  value       = module.parallelcluster.dashboard_name
-}
-
 output "slurm_config_path" {
   description = "Path to the SLURM configuration file"
   value       = module.parallelcluster.slurm_config_path
