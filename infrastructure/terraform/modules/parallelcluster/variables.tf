@@ -33,19 +33,19 @@ variable "key_name" {
 variable "head_node_instance_type" {
   description = "Instance type for head node"
   type        = string
-  default     = "t3.micro"  # Minimal instance for testing
+  default     = "t2.micro"  # Most basic instance type
 }
 
 variable "compute_node_instance_type" {
   description = "Instance type for compute nodes"
   type        = string
-  default     = "t3.micro"  # Minimal instance for testing
+  default     = "t2.micro"  # Most basic instance type
 }
 
 variable "compute_node_vcpus" {
   description = "Number of vCPUs per compute node"
   type        = number
-  default     = 2  # t3.micro has 2 vCPUs
+  default     = 1  # t2.micro has 1 vCPU
 }
 
 variable "ami_id" {
@@ -63,7 +63,7 @@ variable "min_compute_nodes" {
 variable "max_compute_nodes" {
   description = "Maximum number of compute nodes"
   type        = number
-  default     = 1  # Reduced to 1 for testing
+  default     = 1  # Single compute node for testing
 }
 
 variable "desired_compute_nodes" {

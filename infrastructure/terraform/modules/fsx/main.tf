@@ -36,7 +36,7 @@ resource "aws_security_group" "fsx" {
 # Create FSx for Lustre filesystem
 resource "aws_fsx_lustre_file_system" "hpc" {
   storage_capacity    = var.storage_capacity
-  subnet_ids         = var.subnet_ids
+  subnet_id          = var.subnet_ids[0]  # Use first subnet only
   deployment_type    = "SCRATCH_2"
   security_group_ids = [aws_security_group.fsx.id]
 
