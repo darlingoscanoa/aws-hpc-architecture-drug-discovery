@@ -2,15 +2,16 @@
 
 # Create FSx for Lustre filesystem
 resource "aws_fsx_lustre_file_system" "hpc" {
-  storage_capacity                = var.storage_capacity
-  subnet_ids                      = var.subnet_ids
-  security_group_ids             = var.security_group_ids
-  deployment_type                = "PERSISTENT_1"
-  per_unit_storage_throughput    = 200
+  storage_capacity              = var.storage_capacity
+  subnet_id                     = var.subnet_ids[0]  # Use first subnet only
+  deployment_type              = "SCRATCH_2"
+  storage_type                 = "SSD"
+  per_unit_storage_throughput = 1000
+  security_groups             = [aws_security_group.fsx.id]
   automatic_backup_retention_days = 7
 
   tags = {
-    Name        = "${var.project_name}-fsx"
+    Name        = "${var.project_name}-${var.environment}-fsx"
     Environment = var.environment
   }
 }
