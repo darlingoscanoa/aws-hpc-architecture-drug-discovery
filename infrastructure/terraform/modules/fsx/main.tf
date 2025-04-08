@@ -38,7 +38,8 @@ resource "aws_security_group" "fsx" {
 resource "aws_fsx_lustre_file_system" "hpc" {
   storage_capacity    = var.storage_capacity
   subnet_ids         = [var.subnet_id]
-  deployment_type    = "SCRATCH_2"
+  deployment_type    = "PERSISTENT_1"
+  per_unit_storage_throughput = 50
   security_group_ids = [aws_security_group.fsx.id]
 
   tags = {
