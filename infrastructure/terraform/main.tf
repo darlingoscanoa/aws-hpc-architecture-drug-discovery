@@ -65,7 +65,7 @@ module "fsx" {
   subnet_id         = module.vpc.private_subnet_ids[0]  # Use first private subnet
   security_group_ids = [module.parallelcluster.cluster_security_group_id]
   storage_capacity   = 1200  # GB
-  vpc_cidr          = module.vpc.vpc_cidr
+  vpc_cidr          = module.vpc.vpc_cidr_block
   s3_bucket_name    = module.s3.bucket_name
 }
 
