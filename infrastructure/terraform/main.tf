@@ -85,7 +85,7 @@ module "parallelcluster" {
   max_compute_nodes       = var.max_compute_nodes
   desired_compute_nodes   = var.desired_compute_nodes
   s3_bucket_name         = module.s3.bucket_name
-  fsx_filesystem_id = module.fsx.file_system_id
+  fsx_storage_capacity    = var.fsx_storage_capacity
 }
 
 # CloudWatch module
