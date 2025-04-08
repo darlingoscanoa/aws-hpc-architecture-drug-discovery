@@ -13,6 +13,8 @@ resource "aws_cloudwatch_log_group" "hpc" {
 
 # Create CloudWatch Metric Alarms
 resource "aws_cloudwatch_metric_alarm" "cluster_cpu" {
+  count = var.sns_topic_arn != null ? 1 : 0
+
   alarm_name          = "${var.project_name}-high-cpu"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "2"
@@ -30,6 +32,8 @@ resource "aws_cloudwatch_metric_alarm" "cluster_cpu" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "fsx_storage" {
+  count = var.sns_topic_arn != null ? 1 : 0
+
   alarm_name          = "${var.project_name}-fsx-storage"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "2"
