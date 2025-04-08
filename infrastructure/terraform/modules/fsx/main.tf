@@ -10,6 +10,7 @@ resource "aws_security_group" "fsx" {
     to_port         = 988
     protocol        = "tcp"
     security_groups = var.security_group_ids
+    self           = true
   }
 
   ingress {

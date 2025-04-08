@@ -39,7 +39,7 @@ variable "head_node_instance_type" {
 variable "compute_node_instance_type" {
   description = "Instance type for compute nodes"
   type        = string
-  default     = "g4dn.xlarge"
+  default     = "t3.micro"  # Temporarily using t3.micro until GPU quota is increased
 }
 
 variable "min_compute_nodes" {
