@@ -49,13 +49,4 @@ resource "aws_fsx_lustre_file_system" "hpc" {
 }
 
 # Create data repository association with S3
-resource "aws_fsx_data_repository_association" "hpc" {
-  file_system_id    = aws_fsx_lustre_file_system.hpc.id
-  data_repository_path = "s3://${var.s3_bucket_name}"
-  file_system_path    = "/data"
-
-  tags = {
-    Name        = "${var.project_name}-dra"
-    Environment = var.environment
-  }
-}
+# Removed data repository association as it's not supported with SCRATCH_2
