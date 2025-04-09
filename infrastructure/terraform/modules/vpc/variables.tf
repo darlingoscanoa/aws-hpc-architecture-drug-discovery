@@ -15,8 +15,14 @@ variable "vpc_cidr" {
   type        = string
 }
 
+variable "availability_zones" {
+  description = "List of availability zones that support g3.4xlarge instances"
+  type        = list(string)
+  default     = ["us-east-1a", "us-east-1c"]  # g3 instances are available in these AZs
+}
+
 variable "aws_region" {
   description = "AWS region"
   type        = string
   default     = "us-east-1"
-} 
+}
