@@ -39,7 +39,7 @@ variable "head_node_instance_type" {
 variable "compute_node_instance_type" {
   description = "Instance type for compute nodes"
   type        = string
-  default     = "g4dn.xlarge"  # GPU instance for ML training
+  default     = "g3.4xlarge"  # GPU instance (NVIDIA Tesla M60) for ML training and visualization
 }
 
 variable "min_compute_nodes" {
