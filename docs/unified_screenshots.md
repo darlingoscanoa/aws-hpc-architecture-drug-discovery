@@ -112,7 +112,20 @@ FSx for Lustre provides high-performance storage for our HPC workloads. The dash
 
 ### Training Stage Screenshots
 
-#### 9. AWS Batch Dashboard
+#### 9. Terraform Deployment
+**Location**: AWS CloudShell
+**What to Capture**: 
+- Terraform init output
+- Terraform plan showing resource creation
+- Terraform apply progress
+- Final deployment state
+
+**Newsletter Text**:
+```
+Our infrastructure is defined as code using Terraform, demonstrating modern DevOps practices. The deployment shows the creation of our HPC infrastructure including GPU instances, EFA networking, and high-performance storage.
+```
+
+#### 10. AWS Batch Dashboard
 **Location**: AWS Console → AWS Batch → Dashboard
 **What to Capture**: 
 - Job queue status showing both training and inference queues
@@ -125,20 +138,33 @@ FSx for Lustre provides high-performance storage for our HPC workloads. The dash
 Our HPC infrastructure leverages AWS Batch for efficient job scheduling. This dashboard shows our two-tier approach: high-priority queue for training (using cost-effective spot instances) and inference queue (using reliable on-demand instances). This hybrid strategy optimizes both cost and performance while ensuring job completion.
 ```
 
-#### 10. GPU Instance Performance
-**Location**: AWS Console → EC2 → Instances → Select g4dn.xlarge → Monitoring
+#### 11. GPU Instance Performance
+**Location**: AWS Console → EC2 → Instances → Select g4dn.xlarge instance
 **What to Capture**:
-- GPU utilization graph (showing 95%+ utilization)
-- CPU utilization
-- Memory usage
-- Instance state and tags
+- GPU utilization during training
+- CUDA memory usage
+- EFA network throughput
+- Instance metrics
 
 **Newsletter Text**:
 ```
-The g4dn.xlarge instance with NVIDIA T4 GPU delivers exceptional performance for our drug discovery pipeline. The metrics show optimal resource utilization with 95% GPU utilization during training, demonstrating efficient compute resource allocation.
+Our g4dn.xlarge instances with NVIDIA T4 GPUs demonstrate impressive performance for ML training. The metrics show optimal GPU utilization and memory usage, while EFA networking ensures high-bandwidth, low-latency communication.
 ```
 
-#### 11. Model Training Metrics
+#### 12. MLOps Pipeline
+**Location**: Custom CloudWatch Dashboard
+**What to Capture**:
+- Training progress and metrics
+- Model versioning
+- Deployment status
+- Inference endpoints
+
+**Newsletter Text**:
+```
+Our MLOps pipeline showcases end-to-end automation of the ML lifecycle. From training to deployment, we maintain version control of models, automate testing, and ensure seamless deployment to production endpoints.
+```
+
+#### 13. Model Training Metrics
 **Location**: Custom CloudWatch Dashboard
 **What to Capture**:
 - Training loss curve

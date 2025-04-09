@@ -9,6 +9,7 @@ resource "aws_launch_template" "compute_node" {
   network_interfaces {
     associate_public_ip_address = false
     security_groups            = [aws_security_group.cluster.id]
+    interface_type             = "efa"
   }
 
   iam_instance_profile {

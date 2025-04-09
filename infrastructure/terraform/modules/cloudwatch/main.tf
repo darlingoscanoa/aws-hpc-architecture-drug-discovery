@@ -89,6 +89,24 @@ resource "aws_cloudwatch_dashboard" "hpc" {
           region = var.aws_region
           title  = "FSx Storage Capacity"
         }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 6
+        width  = 12
+        height = 6
+
+        properties = {
+          metrics = [
+            ["AWS/EC2", "GPUUtilization", "InstanceId", "*", { "label": "GPU Utilization" }],
+            ["AWS/EC2", "GPUMemoryUtilization", "InstanceId", "*", { "label": "GPU Memory" }]
+          ]
+          period = 60
+          stat   = "Average"
+          region = var.aws_region
+          title  = "GPU Metrics"
+        }
       }
     ]
   })

@@ -35,7 +35,29 @@ The IAM configuration demonstrates our security-first approach. Each component h
 Our IAM configuration exemplifies the principle of least privilege while maintaining operational efficiency. Each service role has precisely defined permissions that enable necessary operations without excessive access. The trust relationships demonstrate our careful consideration of service interactions, while the permission policies show our commitment to security best practices. The access patterns reveal our sophisticated approach to service-to-service communication, ensuring secure yet efficient operation of our HPC infrastructure.
 ```
 
-### 4. S3 Bucket Structure
+### 4. Infrastructure as Code
+**Primary Text**:
+```
+Our infrastructure is defined and deployed using Terraform, demonstrating modern DevOps practices and ensuring reproducibility across environments.
+```
+
+**Detailed Text**:
+```
+Leveraging Infrastructure as Code with Terraform enables us to maintain consistent, version-controlled infrastructure deployments. Our modular approach allows for easy scaling and modifications while maintaining security best practices. The automated deployment process includes GPU-enabled instances, EFA networking for high performance, and optimized storage configurations.
+```
+
+### 5. MLOps Pipeline
+**Primary Text**:
+```
+Our MLOps pipeline demonstrates end-to-end automation of the machine learning lifecycle, from training to deployment.
+```
+
+**Detailed Text**:
+```
+The MLOps pipeline showcases industry best practices in ML automation. It includes automated training workflows, model versioning, performance monitoring, and seamless deployment processes. The integration with AWS services enables efficient scaling and management of ML workloads while maintaining high performance and cost optimization.
+```
+
+### 6. S3 Bucket Structure
 **Primary Text**:
 ```
 Our S3 storage architecture implements a tiered approach: hot data in standard storage for active processing, warm data in infrequent access for occasional use, and cold data in Glacier for long-term storage.
