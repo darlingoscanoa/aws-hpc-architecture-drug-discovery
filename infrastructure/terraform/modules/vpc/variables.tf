@@ -18,7 +18,7 @@ variable "vpc_cidr" {
 variable "availability_zones" {
   description = "List of availability zones that support p3.2xlarge instances"
   type        = list(string)
-  default     = ["us-east-1b", "us-east-1c"]  # p3 instances are available in these AZs
+  default     = ["us-east-1a", "us-east-1b"]  # p3 instances are available in these AZs according to AWS
 }
 
 variable "aws_region" {
