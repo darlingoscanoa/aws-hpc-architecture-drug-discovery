@@ -18,7 +18,7 @@ variable "vpc_cidr" {
 variable "availability_zones" {
   description = "List of availability zones that support p3.2xlarge instances"
   type        = list(string)
-  default     = ["us-east-1a"]  # Using only us-east-1a which definitely supports p3.2xlarge
+  default     = ["us-east-1b"]  # p3.2xlarge is available in us-east-1b according to AWS error message
 }
 
 variable "aws_region" {
