@@ -39,7 +39,7 @@ variable "head_node_instance_type" {
 variable "compute_node_instance_type" {
   description = "Instance type for compute nodes"
   type        = string
-  default     = "p3.2xlarge"  # GPU instance with NVIDIA V100 GPU, better for ML/AI workloads
+  default     = "g3.4xlarge"  # GPU instance with NVIDIA V100 GPU, better for ML/AI workloads
 }
 
 variable "min_compute_nodes" {
