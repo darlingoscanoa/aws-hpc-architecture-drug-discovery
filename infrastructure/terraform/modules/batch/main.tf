@@ -207,6 +207,15 @@ resource "aws_iam_role_policy" "batch_service_ecs" {
         Effect = "Allow"
         Action = [
           "ecs:*",
+          "ecs:DeleteCluster",
+          "ecs:ListClusters",
+          "ecs:DescribeClusters",
+          "ecs:ListContainerInstances",
+          "ecs:DeregisterContainerInstance",
+          "ecs:UpdateContainerInstancesState",
+          "ec2:DeleteLaunchTemplate",
+          "ec2:DescribeLaunchTemplates",
+          "ec2:DescribeLaunchTemplateVersions",
           "logs:*",
           "ec2:*",
           "autoscaling:*",
