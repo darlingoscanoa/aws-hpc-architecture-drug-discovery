@@ -115,9 +115,6 @@ resource "aws_batch_job_definition" "inference" {
     ]
     executionRoleArn = aws_iam_role.batch_execution_role.arn
     jobRoleArn      = aws_iam_role.batch_job_role.arn
-    networkConfiguration = {
-      assignPublicIp = "ENABLED"
-    }
     portMappings = [
       {
         containerPort = 8501
