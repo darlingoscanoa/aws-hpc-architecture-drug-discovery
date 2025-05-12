@@ -69,6 +69,7 @@ Comprehensive documentation is available in the `docs/` directory:
    - AWS CLI configured with appropriate permissions
    - Terraform >= 1.0.0
    - Python >= 3.8
+   - Docker installed and configured
    - AWS key pair named 'hpc-drug-discovery-key' in your AWS region
    ```
 
@@ -78,13 +79,22 @@ Comprehensive documentation is available in the `docs/` directory:
    cd aws-hpc-architecture-drug-discovery
    ```
 
-3. **Configuration**
+3. **Build and Push Docker Image**
+   ```bash
+   # Make the build script executable
+   chmod +x scripts/build_and_push.sh
+   
+   # Build and push the Docker image (replace with your AWS account ID)
+   ./scripts/build_and_push.sh YOUR_AWS_ACCOUNT_ID
+   ```
+
+4. **Configuration**
    ```bash
    cp terraform.tfvars.example terraform.tfvars
    # Edit terraform.tfvars with your configuration
    ```
 
-4. **Deployment**
+5. **Deployment**
    ```bash
    # Create AWS key pair first
    aws ec2 create-key-pair --key-name hpc-drug-discovery-key --query 'KeyMaterial' --output text > ~/.ssh/hpc-drug-discovery-key.pem

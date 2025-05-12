@@ -83,8 +83,8 @@ resource "aws_batch_job_definition" "inference" {
   platform_capabilities = ["EC2"]
 
   container_properties = jsonencode({
-    image = "${var.ecr_repository_url}:latest"
-    command = ["inference"]
+    image = "${var.ecr_repository_url}-inference:latest"
+    command = ["streamlit", "run", "src/inference/predict.py"]
     resourceRequirements = [
       {
         type  = "VCPU"
@@ -107,10 +107,24 @@ resource "aws_batch_job_definition" "inference" {
       {
         name  = "AWS_DEFAULT_REGION"
         value = data.aws_region.current.name
+      },
+      {
+        name  = "PORT"
+        value = "8501"
       }
     ]
     executionRoleArn = aws_iam_role.batch_execution_role.arn
     jobRoleArn      = aws_iam_role.batch_job_role.arn
+    networkConfiguration = {
+      assignPublicIp = true
+    }
+    portMappings = [
+      {
+        containerPort = 8501
+        hostPort = 8501
+        protocol = "tcp"
+      }
+    ]
   })
 }
 
@@ -193,13 +207,7 @@ resource "aws_iam_role_policy" "batch_service_ecs" {
         Effect = "Allow"
         Action = [
           "ecs:*",
-          "ecs:ListClusters",
-          "ecs:DeleteCluster",
           "logs:*",
-          "logs:DescribeLogGroups",
-          "logs:CreateLogGroup",
-          "logs:PutLogEvents",
-          "logs:CreateLogStream",
           "ec2:*",
           "autoscaling:*",
           "iam:PassRole",
@@ -216,10 +224,7 @@ resource "aws_iam_role_policy_attachment" "batch_service" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole"
 }
 
-resource "aws_iam_role_policy_attachment" "batch_service_ecs" {
-  role       = aws_iam_role.batch_service_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
+
 
 resource "aws_iam_role" "batch_instance_role" {
   name = "${var.project_name}-batch-instance-role"

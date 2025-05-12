@@ -56,8 +56,8 @@ class ModelTrainer:
         self.model = create_model(model_name, num_classes)
         self.model.to(self.device)
         
-        # Set up loss function and optimizer
-        self.criterion = nn.CrossEntropyLoss()
+        # Set up loss function and optimizer for multi-label classification
+        self.criterion = nn.BCEWithLogitsLoss()
         self.optimizer = optim.Adam(self.model.parameters(), lr=learning_rate)
         
         # Initialize best model tracking
@@ -80,11 +80,11 @@ class ModelTrainer:
         y_train = np.load(os.path.join(data_dir, 'y_train.npy'))
         y_test = np.load(os.path.join(data_dir, 'y_test.npy'))
         
-        # Convert to PyTorch tensors
+        # Convert to PyTorch tensors (using float for multi-label)
         X_train = torch.FloatTensor(X_train)
         X_test = torch.FloatTensor(X_test)
-        y_train = torch.LongTensor(y_train)
-        y_test = torch.LongTensor(y_test)
+        y_train = torch.FloatTensor(y_train)
+        y_test = torch.FloatTensor(y_test)
         
         # Create datasets
         train_dataset = TensorDataset(X_train, y_train)
@@ -133,9 +133,10 @@ class ModelTrainer:
             self.optimizer.step()
             
             total_loss += loss.item()
-            _, predicted = output.max(1)
+            # Multi-label prediction (threshold at 0.5)
+            predicted = (output > 0.0).float()
+            correct += (predicted == target).all(dim=1).sum().item()
             total += target.size(0)
-            correct += predicted.eq(target).sum().item()
             
             if batch_idx % 10 == 0:
                 logger.info(f'Train Batch: {batch_idx}/{len(train_loader)} '
